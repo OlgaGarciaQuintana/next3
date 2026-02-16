@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:18
+    restart: always
+    environment:
+      - POSTGRES_DB=next3
+      - POSTGRES_USER=olga
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - "5432:5432"
+    networks:
+      - prisma-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U olga -d next3"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - postgres_data:/var/lib/postgresql/18/docker
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "9900:8080"
+    networks:
+      - prisma-network
+
+networks:
+  prisma-network:
+
+volumes:
+  postgres_data:
